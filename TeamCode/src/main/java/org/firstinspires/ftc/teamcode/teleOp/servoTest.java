@@ -7,39 +7,31 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 public class servoTest extends LinearOpMode {
-
-    private Servo left;
-    private Servo right;
-    private double position = 0.5;
+    //variables
+    DcMotor drive;
+    DcMotor turn;
+    Servo rotate;
+    Servo brat1;
+    Servo brat2;
+    private double motorPower;
+    private double turnPower;
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-        left = hardwareMap.get(Servo.class, "left");
-        right = hardwareMap.get(Servo.class, "right");
-
-        left.setDirection(Servo.Direction.REVERSE);
-
-        left.setPosition(position);
-        right.setPosition(position);
+        //init
+        drive = hardwareMap.get(DcMotor.class, "drive");
+        turn = hardwareMap.get(DcMotor.class, "turn");
 
         waitForStart();
+        if(isStopRequested()) return;
+        while (opModeIsActive()){
+            //start
+            motorPower = -gamepad1.left_stick_y;
+            drive.setPower(motorPower);
 
-        while (opModeIsActive())
-        {
-            if(gamepad1.dpadUpWasPressed()) {
-                position+=0.01;
-                left.setPosition(position);
-                right.setPosition(position);
-            }
-            else if(gamepad1.dpadDownWasPressed()) {
-                position-=0.01;
-                left.setPosition(position);
-                right.setPosition(position);
-            }
+            turnPower = -gamepad1.right_stick_x;
 
-            telemetry.addData("Servo Position", position);
-            telemetry.update();
+            turn.setPower(turnPower);
         }
     }
 }
