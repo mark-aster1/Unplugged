@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "dev.frozenmilk:Load:0.3.1"
+        classpath "dev.frozenmilk:Load:0.3.2"
     }
 }
 
@@ -31,6 +31,15 @@ apply plugin: 'dev.frozenmilk.sinister.sloth.load'
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
 
+repositories {
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
+    maven {
+        url = "https://mymaven.bylazar.com/releases"
+    }
+}
+
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
@@ -41,5 +50,6 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
-    implementation("dev.frozenmilk.sinister:Sloth:0.3.1")
+    implementation("dev.frozenmilk.sinister:Sloth:0.3.2")
+    implementation("com.bylazar.sloth:fullpanels:0.3.2+1.0.13")
 }
