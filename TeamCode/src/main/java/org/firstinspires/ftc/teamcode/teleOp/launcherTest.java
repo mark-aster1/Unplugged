@@ -4,7 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 
 @Configurable
 @TeleOp
@@ -21,17 +24,22 @@ public class launcherTest extends LinearOpMode {
     private double integralSum = 0;
     private ElapsedTime timer = new ElapsedTime();
 
-    public static double targetRpm = 6000;
+    private double targetRpm;
+
+    public static double targetWheelRpm = 0;
     public static double p = 0.001;
-    public static double i = 0.000001;
+    public static double i = 0;
     public static double d = 0;
     public static double f = 0.00016;
     public static double maxIntegral = 1;
+
+    private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
     @Override
     public void runOpMode() throws InterruptedException {
         motor = hardwareMap.get(DcMotorEx.class, "motor");
 
+        motor.setDirection(DcMotorSimple.Direction.REVERSE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -41,13 +49,15 @@ public class launcherTest extends LinearOpMode {
         while (opModeIsActive()){
             ticksPerSec = motor.getVelocity();
             motorRpm = ticksPerSec / 28.0 * 60.0;
-            wheelRpm = motorRpm / 12.0;
+            wheelRpm = motorRpm / 1.4;
+
+            targetRpm = targetWheelRpm * 1.4;
 
             if (gamepad1.dpadDownWasPressed()) {
-                targetRpm -= 250;
+                targetRpm -= 100;
             }
             else if (gamepad1.dpadUpWasPressed()) {
-                targetRpm += 250;
+                targetRpm += 100;
             }
 
             motorPower = clamp(PIDF(p, i, d, f), -1, 1);
@@ -59,6 +69,12 @@ public class launcherTest extends LinearOpMode {
             telemetry.addData("motorPower", motorPower);
             telemetry.addData("f", f);
             telemetry.update();
+
+            panelsTelemetry.addData("motor rpm", motorRpm);
+            panelsTelemetry.addData("targetRpm", targetRpm);
+            panelsTelemetry.addData("motorPower", motorPower);
+            panelsTelemetry.addData("f", f);
+            panelsTelemetry.update(telemetry);
         }
     }
 
